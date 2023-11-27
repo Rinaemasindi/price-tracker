@@ -64,6 +64,7 @@ class Takealot:
             
             all_products.append(product_dict)             
         
+        self.driver.quit()
         return all_products
             
     def check_exists_by_class_name(self,element, class_name):
