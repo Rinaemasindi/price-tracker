@@ -5,14 +5,18 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
+from .SaletrackerProductManager import SaletrackerProductManager
 
 class Takealot:
 
     def __init__(self):
         fireFoxOptions = Options()
-        # fireFoxOptions.add_argument("--headless")
+        fireFoxOptions.add_argument("--headless")
         self.driver = webdriver.Firefox(options=fireFoxOptions)
-        # self.wait = WebDriverWait(self.driver, 10)            
+        # self.wait = WebDriverWait(self.driver, 10)      
+        
+        # Initialize SaletrackerDB and insert the product
+        self.saletracker_db = SaletrackerProductManager('localhost', 'root', '', 'saletracker')      
 
     def check_if_img_exits(self, element):
         try:
@@ -33,7 +37,7 @@ class Takealot:
             
             print(len(products))
             
-            if len(products) > 100:
+            if len(products) > 6000:
                 break
             
             html = self.driver.find_element(By.TAG_NAME, 'html')
@@ -59,13 +63,15 @@ class Takealot:
                 "name":product_name,
                 "url":product_url,
                 "image":product_image,
-                "price":product_price
+                "price":product_price,
+                "shop_id":7,
+                "product_type_id":None
             }    
+            self.saletracker_db.insert_product(product_dict) 
             
-            all_products.append(product_dict)             
-        
         self.driver.quit()
-        return all_products
+        return True
+
             
     def check_exists_by_class_name(self,element, class_name):
         try:

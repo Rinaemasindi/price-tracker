@@ -51,3 +51,6 @@ ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 -- Modify the producttype table to add a date column
 ALTER TABLE producttype
 ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE product
+MODIFY COLUMN created_at DATE DEFAULT CURRENT_DATE;
