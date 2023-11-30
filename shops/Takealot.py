@@ -11,7 +11,7 @@ class Takealot:
 
     def __init__(self):
         fireFoxOptions = Options()
-        fireFoxOptions.add_argument("--headless")
+        # fireFoxOptions.add_argument("--headless")
         self.driver = webdriver.Firefox(options=fireFoxOptions)
         # self.wait = WebDriverWait(self.driver, 10)      
         
@@ -31,20 +31,45 @@ class Takealot:
 
         self.driver.get(link)
         while True:
-            sleep(5)
+            html = self.driver.find_element(By.TAG_NAME, 'html')
+            html.send_keys(Keys.END)
+            sleep(10)
+            
             product_grid = self.driver.find_element(By.CLASS_NAME, 'listings-container-module_listings-container_AC4LI')
             products = product_grid.find_elements(By.CLASS_NAME, 'product-card')
             
             print(len(products))
             
-            if len(products) > 6000:
-                break
+            if len(products) >= 1000:
+                for product in products:
+                    
+                    product_name = product.find_element(By.CLASS_NAME, 'product-title').get_attribute("innerText")
+                    product_url = product.find_element(By.CLASS_NAME, 'product-card-module_product-anchor_TUCBV').get_attribute("href")
+                    product_price = product.find_element(By.CLASS_NAME, 'product-card-module_price_zVU6d').get_attribute("innerText")
+                    
+                    if self.check_if_img_exits(product):
+                        product_image = product.find_element(By.TAG_NAME, 'img').get_attribute("src")            
+                    else:
+                        product_image = None
+
+                    product_dict = {
+                        "name":product_name,
+                        "url":product_url,
+                        "image":product_image,
+                        "price":product_price,
+                        "shop_id":7,
+                        "product_type_id":None
+                    }
+            
+                    self.saletracker_db.insert_product(product_dict)
+                self.driver.get(self.driver.current_url)
+                sleep(10) 
             
             html = self.driver.find_element(By.TAG_NAME, 'html')
             html.send_keys(Keys.END)
             
-            if self.check_exists_by_class_name(self.driver, 'search-listings-module_load-more_OwyvW'):
-                self.driver.find_element(By.CLASS_NAME, 'search-listings-module_load-more_OwyvW').click()      
+            if self.check_exists_by_class_name(self.driver, 'search-listings-module_load-more-container_2sgBB'):
+                self.driver.find_element(By.CLASS_NAME, 'search-listings-module_load-more-container_2sgBB').find_element(By.CLASS_NAME, 'search-listings-module_load-more_OwyvW').click()      
             else:
                 break
         
@@ -53,12 +78,12 @@ class Takealot:
             product_name = product.find_element(By.CLASS_NAME, 'product-title').get_attribute("innerText")
             product_url = product.find_element(By.CLASS_NAME, 'product-card-module_product-anchor_TUCBV').get_attribute("href")
             product_price = product.find_element(By.CLASS_NAME, 'product-card-module_price_zVU6d').get_attribute("innerText")
-                
+            
             if self.check_if_img_exits(product):
                 product_image = product.find_element(By.TAG_NAME, 'img').get_attribute("src")            
             else:
                 product_image = None
-            
+
             product_dict = {
                 "name":product_name,
                 "url":product_url,
@@ -66,7 +91,8 @@ class Takealot:
                 "price":product_price,
                 "shop_id":7,
                 "product_type_id":None
-            }    
+            }
+    
             self.saletracker_db.insert_product(product_dict) 
             
         self.driver.quit()

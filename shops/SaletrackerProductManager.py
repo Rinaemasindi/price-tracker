@@ -53,17 +53,3 @@ class SaletrackerProductManager:
 
         finally:
             cursor.close()
-
-
-saletracker_db  = SaletrackerProductManager('localhost', 'root', '', 'saletracker') 
-
-product_dict = {
-    "name":"test",
-    "url":"https://www.incredible.co.za/samsung-98-inch-qled-4k-98q80c-freestyle",
-    "image":'test',
-    "price":'test',
-    "shop_id":8,
-    "product_type_id":None
-}    
-
-saletracker_db.insert_product(product_dict) 
